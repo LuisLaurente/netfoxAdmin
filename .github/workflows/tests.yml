@@ -24,24 +24,41 @@ jobs:
     name: PHP ${{ matrix.php }}
 
     steps:
-      - name: Checkout code
+      - name: Clonar el repositorio
         uses: actions/checkout@v4
 
-      - name: Setup PHP
+      - name: Configurar PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
           extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite
           coverage: none
 
-      - name: Install Composer dependencies
+      - name: Instalar dependencias de Composer
         run: composer install --prefer-dist --no-interaction --no-progress
 
-      - name: Copy environment file
+      - name: Copiar archivo .env
         run: cp .env.example .env
 
-      - name: Generate app key
+      - name: Generar clave de aplicación
         run: php artisan key:generate
 
-      - name: Execute tests
+      - name: Instalar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Instalar dependencias frontend
+        run: npm install
+
+      - name: Compilar assets con Vite
+        run: npm run build
+
+      - name: Ejecutar migraciones (opcional si usas SQLite y seeds)
+        run: php artisan migrate --no-interaction --force || true
+
+      - name: Ejecutar pruebas
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: ":memory:"
         run: php artisan test

@@ -1,0 +1,37 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up()
+    {
+        Schema::create('cuentas', function (Blueprint $table) {
+            $table->id();
+            $table->string('plataforma');
+            $table->string('nombre');
+            $table->string('perfil')->nullable();
+            $table->string('celular')->nullable();
+            $table->string('correo');
+            $table->string('contraseña');
+            $table->date('vencimiento');
+            $table->boolean('alerta_vencimiento')->default(false);
+            $table->date('vencimiento_cuenta')->nullable();
+            $table->boolean('alerta_cuenta')->default(false);
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('cuentas');
+    }
+};
